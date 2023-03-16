@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="UTF-8">
+  <title>Diet Calculation Verifier</title>
+  <style>
+      body {
+          font-family: Arial, sans-serif;
+          background-color: #f2f2f2;
+      }
+      form {
+          background-color: #fff;
+          padding: 20px;
+          border-radius: 10px;
+          box-shadow: 0 0 10px rgba(0,0,0,0.2);
+          max-width: 300px;
+          margin: 0 auto;
+      }
+      h1 {
+          text-align: center;
+          font-size: xx-large;
+      }
+      label {
+          display: block;
+          margin-bottom: 10px;
+      }
+      input[type="text"] {
+          padding: 5px;
+          border-radius: 5px;
+          border: none;
+          box-shadow: 0 0 5px rgba(0,0,0,0.2);
+          width: 100%;
+          margin-bottom: 20px;
+          font-size: 16px;
+      }
+      button#submitBtn {
+          background-color: #4CAF50;
+          color: #fff;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-size: 16px;
+          transition: background-color 0.2s ease;
+      }
+      button#submitBtn:hover {
+          background-color: #3e8e41;
+      }
+      button#clearBtn {
+          background-color: #f44336;
+          color: #fff;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-size: 16px;
+          transition: background-color 0.2s ease;
+          float: right;
+      }
+
+      button#clearBtn:hover {
+          background-color: #d32f2f;
+      }
+  </style>
+</head>
+<body>
+<h1>Diet Calculator</h1>
+<form>
+  <label for="targetWeight">Target Weight (mg):</label>
+  <input type="text" id="targetWeight" name="targetWeight">
+
+  <label for="analyteWeight">Analyte Weight (mg):*</label>
+  <input type="text" id="analyteWeight" name="analyteWeight" required>
+
+  <label for="rodentDietWeight">Rodent Diet Weight (g):*</label>
+  <input type="text" id="rodentDietWeight" name="rodentDietWeight" required>
+
+  <label for="concentration">Concentration (mg/g):</label>
+  <input type="text" id="concentration" name="concentration">
+
+  <button type="submit" id="submitBtn">GO!</button>
+  <button id="clearBtn">Clear</button>
+</form>
+<script>
+    const submitBtn = document.getElementById("submitBtn");
+    const clearBtn = document.getElementById("clearBtn");
+
+    submitBtn.addEventListener("click", function(event) {
+        event.preventDefault();
+
+        const targetWeight = document.getElementById("targetWeight").value;
+        const analyteWeight = document.getElementById("analyteWeight").value;
+        const rodentDietWeight = document.getElementById("rodentDietWeight").value;
+        const concentration = document.getElementById("concentration").value;
+
+        let alertMessage = "";
+
+        // Analyte Weight validation
+        const targetWeightNum = parseFloat(targetWeight);
+        const analyteWeightNum = parseFloat(analyteWeight);
+
+        if (isNaN(analyteWeightNum) || analyteWeightNum <= 0) {
+            alertMessage += "Invalid Analyte Weight. Please enter a positive number.\n";
+        }
+        if (!isNaN(targetWeightNum) && (Math.abs(analyteWeightNum - targetWeightNum) / targetWeightNum > 0.05)) {
+            alertMessage += "Analyte Weight differs by more than 5% from the Target Weight.\n";
+        }
+
+        // Rodent Diet Weight validation
+        const rodentDietWeightNum = parseFloat(rodentDietWeight);
+        if (isNaN(rodentDietWeightNum) || rodentDietWeightNum <= 0) {
+            alertMessage += "Invalid Rodent Diet Weight. Please enter a positive number.\n";
+        }
+
+        // Concentration validation
+        // Will not run if there are no values to calculate with
+        if (analyteWeightNum && rodentDietWeightNum) {
+            const concentrationNum = parseFloat(concentration);
+            const result = analyteWeightNum / rodentDietWeightNum;
+            if (isNaN(concentrationNum)) {
+                alertMessage += "Calculated Concentration: " + result.toFixed(2) + "mg/g\n";
+            } else if (concentrationNum <= 0) {
+                alertMessage += "Invalid Concentration. Please enter a positive number.\n";
+            }
+
+            if (Math.abs(result - concentrationNum) / concentrationNum > 0.05) {
+                alertMessage += "Warning: Result differs from Concentration by more than 5%.\nReported Concentration: " +
+                    concentrationNum.toFixed(2) + "mg/g\nCalculated Result: " + result.toFixed(2) + "mg/g\n";
+            }
+        }
+
+        // Calculations complete
+        // Present findings
+        if (alertMessage) {
+            alert(alertMessage);
+        } else {
+            alert("Calculation verified. No issues detected.");
+        }
+    });
+
+    clearBtn.addEventListener("click", function(event) {
+        event.preventDefault();
+
+        document.getElementById("analyteWeight").value = "";
+        document.getElementById("rodentDietWeight").value = "";
+        document.getElementById("concentration").value = "";
+
+        document.getElementById("analyteWeight").focus();
+    });
+
+    document.addEventListener("keydown", function(event) {
+        if (event.code === "Delete") {
+            event.preventDefault();
+
+            document.getElementById("analyteWeight").value = "";
+            document.getElementById("rodentDietWeight").value = "";
+            document.getElementById("concentration").value = "";
+
+            document.getElementById("analyteWeight").focus();
+        }
+    });
+</script>
