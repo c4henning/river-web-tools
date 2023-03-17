@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="UTF-8">
+    <title>hERG Comp Checker</title>
+    <link rel="stylesheet" href="tools.css">
+</head>
+<body>
+<h1>hERG Solutions</h1>
+<form>
+    <label for="mw-input">M.W.:</label>
+    <input type="number" id="mw-input" name="mw" required>
+
+    <label for="conc-input">Concentration (mM):</label>
+    <input type="number" id="conc-input" name="conc" required>
+
+    <label for="weight-input">Actual Weight Used (g):</label>
+    <input type="number" id="weight-input" name="weight" required>
+
+    <button type="submit" id="submitBtn">GO!</button>
+    <button id="clearBtn" title="ceal is del key">Clear</button>
+</form>
+
+<script>
+    // This script performs a calculation based on user input to check the accuracy of a hERG compound.
+
+    function converter(mw, conc, weight) {
+        // Converts mM to mol/L
+        let concentration_mol_l = conc * 0.001;
+
+        // This is a given value
+        let volume = 4;
+
+        // Calculates the weight based on the given values
+        let calculated_weight = mw * concentration_mol_l * volume;
+
+        // Calculates the percent difference between the calculated and actual weights
+        let result_accuracy = calculated_weight / weight;
+
+        // Displays an alert depending on the accuracy of the calculation
+        if (result_accuracy > 0.95 && result_accuracy < 1.05) {
+            alert(`RESULT OK\nCalculated weight (${calculated_weight.toFixed(3)}g) is within 5% of weight used (${weight}g)`);
+        } else {
+            alert(`BAD RESULT\nCalculated weight (${calculated_weight.toFixed(3)}g) exceeds 5% variance from weight used (${weight}g)`);
+        }
+    }
+
+    const submitBtn = document.getElementById("submitBtn");
+    const clearBtn = document.getElementById("clearBtn");
+
+    submitBtn.addEventListener("click", function(event) {
+        // Prevents the default form submission behavior
+        event.preventDefault();
+
+        // Gets the values from the input fields and passes them to the converter function
+        let mwInput = document.getElementById("mw-input");
+        let concInput = document.getElementById("conc-input");
+        let weightInput = document.getElementById("weight-input");
+        converter(mwInput.value, concInput.value, weightInput.value);
+    });
+
+    clearBtn.addEventListener("click", function(event) {
+        // Prevents the default behavior of the clear button
+        event.preventDefault();
+
+        // Clears the input fields and sets focus to the first field
+        document.getElementById("mw-input").value = "";
+        document.getElementById("conc-input").value = "";
+        document.getElementById("weight-input").value = "";
+        document.getElementById("mw-input").focus();
+    });
+
+    document.addEventListener("keydown", function(event) {
+        // Checks if the Delete key was pressed
+        if (event.code === "Delete") {
+            event.preventDefault();
+
+            // Clears the input fields and sets focus to the first field
+            document.getElementById("mw-input").value = "";
+            document.getElementById("conc-input").value = "";
+            document.getElementById("weight-input").value = "";
+            document.getElementById("mw-input").focus();
+        }
+    });
+</script>
+
+</body>
+</html>
