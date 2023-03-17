@@ -9,20 +9,20 @@
 <h1>Diet Calculator</h1>
 <form>
     <label for="targetWeight">Target Weight (mg):</label>
-    <input type="number" id="targetWeight" name="targetWeight" list="defaultTarget">
+    <input type="number" id="targetWeight" name="targetWeight" list="defaultTarget" placeholder="optional">
     <datalist id="defaultTarget">
         <option value="32"></option>
         <option value="100"></option>
     </datalist>
 
-    <label for="analyteWeight">Analyte Weight (mg):*</label>
+    <label for="analyteWeight">Analyte Weight (mg):</label>
     <input type="number" id="analyteWeight" name="analyteWeight" required>
 
-    <label for="rodentDietWeight">Rodent Diet Weight (g):*</label>
+    <label for="rodentDietWeight">Rodent Diet Weight (g):</label>
     <input type="number" id="rodentDietWeight" name="rodentDietWeight" required>
 
     <label for="concentration">Concentration (mg/g):</label>
-    <input type="number" id="concentration" name="concentration">
+    <input type="number" id="concentration" name="concentration" placeholder="optional">
 
     <button type="submit" id="submitBtn">GO!</button>
     <button id="clearBtn">Clear</button>
