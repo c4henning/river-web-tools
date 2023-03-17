@@ -4,16 +4,78 @@
   <meta charset="UTF-8">
   <title>Dilution Checker</title>
   <link rel="stylesheet" href="tools.css">
+  <style>
+    #secondary-inputs {
+      display: none;
+    }
+  </style>
 </head>
 <body>
 <h1>Dilution Verification</h1>
 <form>
-  <label for="formulationConcentration">QC Formulation Concentration (mg/mL):</label>
-  <input type="number" id="formulationConcentration" name="formulationConcentration" required>
+  <input type="radio" name="input-type" id="primary-option" style="width: 1em; box-shadow: none" checked>
+  <label for="primary-option" style="float: left">Input Primary</label><br>
+  <input type="radio" name="input-type" id="secondary-option" style="width: 1em; box-shadow: none">
+  <label for="secondary-option" style="float: left">Input Secondary</label>
+
+  <!-- Primary Dilutions -->
+  <div id="primary-inputs">
+    <label for="formulationConcentration">QC Formulation Concentration (mg/mL):</label>
+    <input type="number" id="formulationConcentration" name="formulationConcentration" required>
+
+    <label for="aliquotPrimary">Sample Aliquot (mL):</label>
+    <input type="number" id="aliquotPrimary" name="aliquotPrimary" required>
+
+    <label for="finalVolumePrimary">To Final Volume with Diluent (mL):</label>
+    <input type="number" id="finalVolumePrimary" name="finalVolumePrimary" required>
+
+    <label for="finalConcentrationPrimary">Final Concentration (mg/mL):</label>
+    <input type="number" id="finalConcentrationPrimary" name="finalConcentrationPrimary" required>
+
+    <label for="dilutionFactorPrimary">Dilution Factor:</label>
+    <input type="number" id="dilutionFactorPrimary" name="dilutionFactorPrimary" required>
+  </div>
+
+  <!-- Secondary Dilutions -->
+  <div id="secondary-inputs">
+    <label for="primaryConcentration">Primary Dilution Concentration (mg/mL):</label>
+    <input type="number" id="primaryConcentration" name="primaryConcentration" required>
+
+    <label for="aliquotSecondary">Sample Aliquot (mL):</label>
+    <input type="number" id="aliquotSecondary" name="aliquotSecondary" required>
+
+    <label for="finalVolumeSecondary">To Final Volume with Diluent (mL):</label>
+    <input type="number" id="finalVolumeSecondary" name="finalVolumeSecondary" required>
+
+    <label for="finalConcentrationSecondary">Final Concentration (mg/mL):</label>
+    <input type="number" id="finalConcentrationSecondary" name="finalConcentrationSecondary" required>
+
+    <label for="dilutionFactorSecondary">Total Final Dilution Factor:</label>
+    <input type="number" id="dilutionFactorSecondary" name="dilutionFactorSecondary" required>
+  </div>
 
   <button type="submit" id="submitBtn">GO!</button>
   <button id="clearBtn">Clear</button>
 </form>
+<script>
+  const primaryOption = document.getElementById('primary-option');
+  const secondaryOption = document.getElementById('secondary-option');
+  const primaryInputs = document.getElementById('primary-inputs');
+  const secondaryInputs = document.getElementById('secondary-inputs');
 
+  primaryOption.addEventListener('change', function() {
+    if (primaryOption.checked) {
+      primaryInputs.style.display = 'block';
+      secondaryInputs.style.display = 'none';
+    }
+  });
+
+  secondaryOption.addEventListener('change', function() {
+    if (secondaryOption.checked) {
+      primaryInputs.style.display = 'none';
+      secondaryInputs.style.display = 'block';
+    }
+  });
+</script>
 </body>
 </html>
