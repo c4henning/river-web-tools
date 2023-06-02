@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="UTF-8">
+  <title>River Web Tools</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="container">
+  <div class="row">
+    <h1>Calculation Tools <small><span id="help" class="glyphicon glyphicon-question-sign" title="click for hotkeys"></span></small></h1>
+    <hr>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-4">
+      <iframe src="/tools/hERG-solution.html"></iframe>
+    </div>
+    <div class="col-xs-12 col-sm-6 col-md-4">
+      <iframe src="/tools/rat-calculator.html"></iframe>
+    </div>
+    <div class="col-xs-12 col-sm-6 col-md-4">
+      <iframe src="/tools/dilutions.html"></iframe>
+    </div>
+  </div>
+</div>
+<script>
+    const help = document.getElementById("help");
+    help.addEventListener("click", function () {
+        alert(`"DELETE" key will clear selected form\n`)
+    })
+</script>
+</body>
+</html>

@@ -1,26 +1,25 @@
 <!DOCTYPE html>
 <html lang="en-us">
 <head>
-    <meta charset="UTF-8">
-    <title>hERG Comp Checker</title>
-    <link rel="stylesheet" href="tools.css">
+  <meta charset="UTF-8">
+  <title>hERG Comp Checker</title>
+  <link rel="stylesheet" href="../css/tools.css">
 </head>
 <body>
 <h1>hERG Solutions</h1>
 <form>
-    <label for="mw-input">M.W.:</label>
-    <input type="number" id="mw-input" name="mw" required>
+  <label for="mw-input">M.W.:</label>
+  <input type="number" id="mw-input" name="mw" required>
 
-    <label for="conc-input">Concentration (mM):</label>
-    <input type="number" id="conc-input" name="conc" required>
+  <label for="conc-input">Concentration (mM):</label>
+  <input type="number" id="conc-input" name="conc" required>
 
-    <label for="weight-input">Actual Weight Used (g):</label>
-    <input type="number" id="weight-input" name="weight" required>
+  <label for="weight-input">Actual Weight Used (g):</label>
+  <input type="number" id="weight-input" name="weight" required>
 
-    <button type="submit" id="submitBtn">GO!</button>
-    <button id="clearBtn">Clear</button>
+  <button type="submit" id="submitBtn">GO!</button>
+  <button id="clearBtn">Clear</button>
 </form>
-
 <script>
     // This script performs a calculation based on user input to check the accuracy of a hERG compound.
 
@@ -83,6 +82,5 @@
         }
     });
 </script>
-
 </body>
 </html>

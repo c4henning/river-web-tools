@@ -3,12 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Dilution Checker</title>
-  <link rel="stylesheet" href="tools.css">
-  <style>
-    #secondary-inputs {
-      display: none;
-    }
-  </style>
+  <link rel="stylesheet" href="../css/tools.css">
+  <style>#secondary-inputs {display: none}</style>
 </head>
 <body>
 <h1>Dilution Verification</h1>
@@ -58,24 +54,24 @@
   <button id="clearBtn">Clear</button>
 </form>
 <script>
-  const primaryOption = document.getElementById('primary-option');
-  const secondaryOption = document.getElementById('secondary-option');
-  const primaryInputs = document.getElementById('primary-inputs');
-  const secondaryInputs = document.getElementById('secondary-inputs');
+    const primaryOption = document.getElementById('primary-option');
+    const secondaryOption = document.getElementById('secondary-option');
+    const primaryInputs = document.getElementById('primary-inputs');
+    const secondaryInputs = document.getElementById('secondary-inputs');
 
-  primaryOption.addEventListener('change', function() {
-    if (primaryOption.checked) {
-      primaryInputs.style.display = 'block';
-      secondaryInputs.style.display = 'none';
-    }
-  });
+    primaryOption.addEventListener('change', function() {
+        if (primaryOption.checked) {
+            primaryInputs.style.display = 'block';
+            secondaryInputs.style.display = 'none';
+        }
+    });
 
-  secondaryOption.addEventListener('change', function() {
-    if (secondaryOption.checked) {
-      primaryInputs.style.display = 'none';
-      secondaryInputs.style.display = 'block';
-    }
-  });
+    secondaryOption.addEventListener('change', function() {
+        if (secondaryOption.checked) {
+            primaryInputs.style.display = 'none';
+            secondaryInputs.style.display = 'block';
+        }
+    });
 </script>
 </body>
 </html>
