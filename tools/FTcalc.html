@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="UTF-8">
+  <title>F/T Processor</title>
+  <style>
+      ul {
+          list-style-type:none;
+          margin-top: 0;
+          padding-left: 0;
+      }
+      li {
+          margin-bottom: 1rem;
+      }
+      #left-col {
+          float: left;
+          width: 50%;
+          margin-top: 1rem;
+      }
+      #right-col {
+          float: right;
+          width: 50%;
+          margin-top: 1rem;
+      }
+      #output {
+          background-color: #f8f8f8;
+          padding: 3px;
+          overflow-x:auto;
+      }
+  </style>
+</head>
+<body>
+<div id="left-col">
+  <ul id="buttons">
+    <li>
+      <input type="file" id="csvFileInput" accept=".csv" title="File must be .csv">
+    </li>
+    <li>
+      <button onclick="loadData()">Load Data</button>
+    </li>
+    <li>
+      <button onclick="processFile()">Process Selected Locations</button>
+    </li>
+  </ul>
+  <div id="locations"></div>
+</div>
+<div id="right-col">
+  <button onclick="clearOutput()">Clear Output</button>
+  <pre id="output"></pre>
+</div>
+
+<script type="text/javascript">
+    let globalData = [];  // Store the original CSV data globally
+    const locations = []; // Store the unique locations globally
+    const output = document.getElementById('output');
+
+    let expectedHeader = ['SAMPLE_NAME', 'CONTAINER', 'LOCATION',
+                          'INSTRUMENT', 'COMPONENT', 'COLLECTION',
+                          'CREATED BY', 'CREATED DATE', 'CREATED TIME']
+
+    function CSVToArray(strData, strDelimiter) {
+        // Parses a CSV file into an array of arrays
+        strDelimiter = (strDelimiter || ",");
+        const objPattern = new RegExp(
+            "(" + strDelimiter + "|\\r?\\n|\\r|^)" +
+            "(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|" +
+            "([^\"\\" + strDelimiter + "\\r\\n]*))",
+            "gi"
+        );
+        const arrData = [[]];
+        let arrMatches = null;
+        while (arrMatches = objPattern.exec(strData)) {
+            const strMatchedDelimiter = arrMatches[1];
+            if (strMatchedDelimiter.length && strMatchedDelimiter !== strDelimiter) {
+                arrData.push([]);
+            }
+            const strMatchedValue = arrMatches[2] ? arrMatches[2].replace(new RegExp("\"\"", "g"), "\"") : arrMatches[3];
+            arrData[arrData.length - 1].push(strMatchedValue);
+        }
+        return arrData;
+    }
+
+    function arraysEqual(a, b) {
+        // Used to check if CSV header matched expected format
+        if (a === b) return true;
+        if (a == null || b == null) return false;
+        if (a.length !== b.length) return false;
+        for (let i = 0; i < a.length; ++i) {
+            if (a[i] !== b[i]) return false;
+        }
+        return true;
+    }
+
+    function loadData() {
+        const input = document.getElementById('csvFileInput');
+        const file = input.files[0];
+
+        if (file === undefined) {
+            output.textContent += `No file selected.\n`;
+            return;
+        }
+
+        // Read file attached by user
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            const text = event.target.result;
+            // Parses raw data
+            globalData = CSVToArray(text);
+
+            if (!arraysEqual(globalData[0], expectedHeader)) {
+                output.textContent += `Malformed CSV: Header does not match expected format.\n`;
+                return;
+            }
+
+            // Clears the array to accommodate sequential calculations
+            locations.length = 0;
+            for (let i = 1; i < globalData.length; i++) {
+                // Compile a list of unique locations
+                if (locations.indexOf(globalData[i][2]) === -1) locations.push(globalData[i][2]);
+            }
+            displayLocationCheckboxes(locations);
+
+            output.textContent += `File loaded: ${file.name}\n`;
+        };
+        reader.onerror = function (event) {
+            output.textContent += `Failed to load selected file.\n`;
+        }
+        reader.readAsText(file);
+    }
+
+    function displayLocationCheckboxes(locations) {
+        // Used to prompt user to select locations to use in their calculations
+        // based off the locations found in input CSV
+
+        // Reset HTML contents to accommodate differing CSV without reloading page
+        const container = document.getElementById('locations');
+        container.innerHTML = '';
+
+        // Generate a checkbox for each location
+        locations.forEach((location, index) => {
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = 'loc' + index;
+            checkbox.value = location;
+
+            const label = document.createElement('label');
+            label.htmlFor = 'loc' + index;
+            label.appendChild(document.createTextNode(location));
+
+            container.appendChild(checkbox);
+            container.appendChild(label);
+            container.appendChild(document.createElement('br'));
+        });
+    }
+
+    function processFile() {
+        // Main logic of F/T cycle calculation
+
+        // Store user selected locations for calculation
+        const checkedLocations = new Set(
+            Array.from(document.querySelectorAll('#locations input:checked')).map(input => input.value)
+        );
+        if (checkedLocations.size === 0) {
+            output.textContent += `No locations selected.\n`;
+            return;
+        }
+        // Remove all locations no selected by user
+        // Store the resulting data set separately to preserve original data
+        const trimmedData = globalData.filter(row => checkedLocations.has(row[2]));
+
+        // Sort data by container, creation date, creation time
+        if (trimmedData.length > 1) {
+            trimmedData.sort((a, b) => {
+                if (a[1] === b[1]) {
+                    if (a[7] === b[7]) {
+                        return a[8].localeCompare(b[8]);
+                    }
+                    return a[7].localeCompare(b[7]);
+                }
+                return a[1].localeCompare(b[1]);
+            });
+        }
+
+        const ftCycles = {};  // Store F/T count per container
+        trimmedData.forEach((element, index) => {
+            // Instrument field blank?
+            element.push(element[3] === '');
+            // Same sample as above?
+            element.push(index > 0 && element[1] === trimmedData[index - 1][1]);
+            // Not double xfer?
+            element.push(!(index > 0 && element[9] && trimmedData[index - 1][9]));
+            // All true?
+            element.push(element[9] && element[10] && element[11]);
+
+            // If all true append container as needed and increment F/T count
+            if (element[element.length - 1]) {
+                ftCycles[element[1]] = (ftCycles[element[1]] || 0) + 1;
+            }
+        });
+        // Find the highest number of F/T cycles
+        const ftMaxObs = Math.max(...Object.values(ftCycles));
+
+        const ftMaxAllow = prompt("Enter max allowable F/T cycles:");
+        console.log(Number(ftMaxAllow));
+        if (ftMaxAllow.trim() === '') {
+            output.textContent += `No max allowable was provided.\n`;
+            return;
+        } else if (isNaN(Number(ftMaxAllow))) {
+            output.textContent += `Invalid input for max allowable.\n`;
+            return;
+        }
+
+        output.textContent += `Processing complete.\n`;
+        // Display all user selected locations
+        output.textContent += `\tSelected locations: ${Array.from(checkedLocations).join(', ')}.\n`;
+        output.textContent += `\tMax allowable: ${ftMaxAllow}\n`;
+        if (Object.keys(ftCycles).length === 0) {
+            output.textContent += `\tNo observed F/T cycles.\n`;
+        } else {
+            output.textContent += `\tHighest # of F/T cycles: ${ftMaxObs}\n\t--------------------------\n`;
+        }
+        // Display all containers with F/T cycles exceeding max allowable entered by user
+        Object.keys(ftCycles).forEach(key => {
+            if (ftCycles[key] > ftMaxAllow) {
+                output.textContent += `\t${key} F/T cycles: ${ftCycles[key]}\n`;
+            }
+        });
+    }
+
+    function clearOutput() {
+        output.textContent = ``;
+    }
+</script>
+</body>
+</html>
