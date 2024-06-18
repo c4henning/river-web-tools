@@ -126,6 +126,7 @@
 
             output.textContent += `File loaded: ${file.name}\n`;
         };
+        reader.onerror = function () {
             output.textContent += `Failed to load selected file.\n`;
         }
         reader.readAsText(file);
