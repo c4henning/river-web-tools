@@ -5,27 +5,31 @@
   <title>F/T Processor</title>
   <style>
       ul {
-          list-style-type:none;
+          list-style-type: none;
           margin-top: 0;
           padding-left: 0;
       }
+
       li {
           margin-bottom: 1rem;
       }
+
       #left-col {
           float: left;
           width: 50%;
           margin-top: 1rem;
       }
+
       #right-col {
           float: right;
           width: 50%;
           margin-top: 1rem;
       }
+
       #output {
           background-color: #f8f8f8;
           padding: 3px;
-          overflow-x:auto;
+          overflow-x: auto;
       }
   </style>
 </head>
@@ -122,7 +126,6 @@
 
             output.textContent += `File loaded: ${file.name}\n`;
         };
-        reader.onerror = function (event) {
             output.textContent += `Failed to load selected file.\n`;
         }
         reader.readAsText(file);
@@ -168,14 +171,17 @@
         // Store the resulting data set separately to preserve original data
         const trimmedData = globalData.filter(row => checkedLocations.has(row[2]));
 
-        // Sort data by container, creation date, creation time
+        // Sort data by container (1), creation date (7), creation time (8)
         if (trimmedData.length > 1) {
             trimmedData.sort((a, b) => {
                 if (a[1] === b[1]) {
                     if (a[7] === b[7]) {
                         return a[8].localeCompare(b[8]);
                     }
-                    return a[7].localeCompare(b[7]);
+                    // Parse the date strings and compare them
+                    const dateA = new Date(a[7]);
+                    const dateB = new Date(b[7]);
+                    return dateA - dateB;
                 }
                 return a[1].localeCompare(b[1]);
             });
@@ -201,7 +207,6 @@
         const ftMaxObs = Math.max(...Object.values(ftCycles));
 
         const ftMaxAllow = prompt("Enter max allowable F/T cycles:");
-        console.log(Number(ftMaxAllow));
         if (ftMaxAllow.trim() === '') {
             output.textContent += `No max allowable was provided.\n`;
             return;
